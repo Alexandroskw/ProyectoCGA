@@ -1,2 +1,2 @@
 # ProyectoCGA
-Proyecto final de la materia de _**Computación Gráfica Avanzada
+Proyecto final de la materia de _**Computación Gráfica Avanzada**_
