@@ -92,18 +92,17 @@ Model modelOnion;
 Model modelDartLegoBody;
 
 // Lamps
-Model modelLamp1;
-Model modelLamp2;
 Model modelLampPost2;
 // Hierba
 Model modelGrass;
 // Fountain
 Model modelFountain;
 // Model animate instance
-// Mayow
-//Model mayowModelAnimate;
 //Shrek
 Model shrekAnimate;
+//Castillo
+Model modeloCastillo;
+
 Terrain terrain(-1, -1, 200, 16, "../Textures/mapaAlturas_PF_3.png");
 
 GLuint textureCespedID, textureWallID, textureWindowID, textureHighwayID, textureLandingPadID;
@@ -131,10 +130,10 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-glm::mat4 matrixModelRock = glm::mat4(1.0);
-glm::mat4 matrixModelRock2 = glm::mat4(1.0);
+//glm::mat4 matrixModelRock = glm::mat4(1.0);
+//glm::mat4 matrixModelRock2 = glm::mat4(1.0);
 glm::mat4 modelMatrixDart = glm::mat4(1.0f);
-//glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+glm::mat4 modelMatrixCastillo = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixCebolla = glm::mat4(1.0f);
 glm::mat4 modelMatrixShrek = glm::mat4(1.0);
@@ -172,10 +171,10 @@ std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90), glm::vec3(-70.42, 0, -7.24) };
 std::vector<float> lamp2Orientation = { 21.37 + 90, -65.0 + 90 };
  
-std::vector<glm::vec3> cebollaPosition = { glm::vec3(-82.4218, 5.0, 31.8359), glm::vec3(52.9296, 5.0, 9.5703),
-		glm::vec3(-32.0312, 5.0, -7.6171), glm::vec3(91.9921, 5.0, 66.9921), glm::vec3(-78.3203, 5.0, 87.5),
-		glm::vec3(33.9843, 5.0, -21.6796), glm::vec3(-21.6796, 5.0, -4.4921), glm::vec3(-1.9933, 5.0, -36.877),
-		glm::vec3(-16.279, 5.0, 22.4252), glm::vec3(-15.7807, 5.0, -30.7308) };
+std::vector<glm::vec3> cebollaPosition = { glm::vec3(-82.4218, 3.0, 31.8359), glm::vec3(52.9296, 3.0, 9.5703),
+		glm::vec3(-32.0312, 3.0, -7.6171), glm::vec3(91.9921, 3.0, 66.9921), glm::vec3(-78.3203, 3.0, 87.5),
+		glm::vec3(33.9843, 3.0, -21.6796), glm::vec3(-21.6796, 3.0, -4.4921), glm::vec3(-1.9933, 5.0, -36.877),
+		glm::vec3(-16.279, 3.0, 22.4252), glm::vec3(-15.7807, 3.0, -30.7308) };
 
 
 //Jump variables
@@ -505,7 +504,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	modelRock2.loadModel("../models/Verdugo/verdugo.obj");
 	modelRock2.setShader(&shaderMulLighting);
-
 	
 	terrain.init();
 	terrain.setShader(&shaderTerrain);
@@ -516,12 +514,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelDartLegoBody.setShader(&shaderMulLighting);
 	
 	//Lamp models
-	modelLamp1.loadModel("../models/Onion/Onion.obj");
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
-	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.loadModel("../models/N64 Tree/n64tree.obj");
 	modelLampPost2.setShader(&shaderMulLighting);
+
+	//Cebollas
 	modelOnion.loadModel("../models/Onion/Onion.obj");
 	modelOnion.setShader(&shaderMulLighting);
 
@@ -533,13 +529,13 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelFountain.loadModel("../models/Donkey/Donkey.obj");
 	modelFountain.setShader(&shaderMulLighting);
 
-	//Mayow
-	/*mayowModelAnimate.loadModel("../models/Gentiana/gentiana_fast_run.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);*/
-
 	//Shrek
 	shrekAnimate.loadModel("../models/Gentiana/gentiana_fast_run.fbx");
 	shrekAnimate.setShader(&shaderMulLighting);
+
+	//Castillo
+	modeloCastillo.loadModel("../models/torre/torre.obj");
+	modeloCastillo.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -976,15 +972,13 @@ void destroy() {
 	modelRock.destroy();
 	modelRock2.destroy();
 	modelOnion.destroy();
-	modelLamp1.destroy();
-	modelLamp2.destroy();
 	modelLampPost2.destroy();
 	modelGrass.destroy();
 	modelFountain.destroy();
 
 	// Custom objects animate
-	//mayowModelAnimate.destroy();
 	shrekAnimate.destroy();
+	modeloCastillo.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1089,14 +1083,12 @@ bool processInput(bool continueApplication) {
 
 		if (fabs(axes[1]) > 0.2)
 		{
-			//modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, axes[1] * 0.1));
 			modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(0, 0, axes[1] * 0.1));
 			animationIndex = 0;
 		}
 
 		if (fabs(axes[0]) > 0.2)
 		{
-			//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			animationIndex = 0;
 		}
@@ -1222,21 +1214,17 @@ bool processInput(bool continueApplication) {
 		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(0.02, 0.0, 0.0));
 
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f), glm::vec3(0, 1, 0));
 		modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(1.0f), glm::vec3(0, 1, 0));
 		animationIndex = 1;
 	}
 	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		//modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f), glm::vec3(0, 1, 0));
 		modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(-1.0f), glm::vec3(0, 1, 0));
 		animationIndex = 1;
 	}if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		//modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, 1.02));
 		modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(0, 0, 1.02));
 		animationIndex = 1;
 	}
 	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		//modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -1.02));
 		modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(0, 0, -1.02));
 		animationIndex = 1;
 	}
@@ -1261,24 +1249,26 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
-	matrixModelRock = glm::translate(matrixModelRock, glm::vec3(5.0, 5.0, 5.0));
+	/*matrixModelRock = glm::translate(matrixModelRock, glm::vec3(5.0, 5.0, 5.0));
 
 	matrixModelRock = glm::scale(matrixModelRock, glm::vec3(1.0, 1.0, 1.0));
 
 	matrixModelRock2 = glm::translate(matrixModelRock2, glm::vec3(-31.0146, 0.0, 0.0));
 
-	matrixModelRock2 = glm::scale(matrixModelRock2, glm::vec3(1.0, 1.0, 1.0));
+	matrixModelRock2 = glm::scale(matrixModelRock2, glm::vec3(1.0, 1.0, 1.0));*/
 
 	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
 
-	/*modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 0.05f, -5.0f));
-	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));*/
-
 	modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(-16.279, 0.0, 39.8671));
+	modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(180.0f), glm::vec3(0, 1, 0));
 
 	modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0], modelMatrixFountain[3][2]) + 0.2;
 	modelMatrixFountain = glm::scale(modelMatrixFountain, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	modelMatrixCastillo = glm::translate(modelMatrixCastillo, glm::vec3(-3.3203f, 4.5f, -84.9609f));
+	modelMatrixCastillo = glm::rotate(modelMatrixCastillo, glm::radians(-50.0f), glm::vec3(0, 1, 0));
+
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -1567,8 +1557,8 @@ void applicationLoop() {
 		  * Creacion de colliders
 		  * IMPORTANT do this before interpolations
 		  *******************************************/
-		  // Collider del dart vader lego
-		glm::mat4 modelmatrixColliderDart = glm::mat4(modelMatrixDart);
+		// Collider del dart vader lego
+		/*glm::mat4 modelmatrixColliderDart = glm::mat4(modelMatrixDart);
 		AbstractModel::OBB dartLegoBodyCollider;
 		// Set the orientation of collider before doing the scale
 		dartLegoBodyCollider.u = glm::quat_cast(modelMatrixDart);
@@ -1579,7 +1569,7 @@ void applicationLoop() {
 				modelDartLegoBody.getObb().c.z));
 		dartLegoBodyCollider.c = glm::vec3(modelmatrixColliderDart[3]);
 		dartLegoBodyCollider.e = modelDartLegoBody.getObb().e * glm::vec3(0.5, 0.5, 0.5);
-		addOrUpdateColliders(collidersOBB, "dart", dartLegoBodyCollider, modelMatrixDart);
+		addOrUpdateColliders(collidersOBB, "dart", dartLegoBodyCollider, modelMatrixDart);*/
 
 		// Collider del aricraft
 		/*glm::mat4 modelMatrixColliderAircraft = glm::mat4(modelMatrixAircraft);
@@ -1595,7 +1585,7 @@ void applicationLoop() {
 		addOrUpdateColliders(collidersOBB, "aircraft", aircraftCollider, modelMatrixAircraft);*/
 
 		//Collider del la rock
-		AbstractModel::SBB rockCollider;
+		/*AbstractModel::SBB rockCollider;
 		glm::mat4 modelMatrixColliderRock = glm::mat4(matrixModelRock);
 		modelMatrixColliderRock = glm::scale(modelMatrixColliderRock, glm::vec3(1.0, 1.0, 1.0));
 		modelMatrixColliderRock = glm::translate(modelMatrixColliderRock, modelRock.getSbb().c);
@@ -1603,17 +1593,13 @@ void applicationLoop() {
 		rockCollider.ratio = modelRock.getSbb().ratio * 1.0;
 		addOrUpdateColliders(collidersSBB, "cebolla", rockCollider, matrixModelRock);
 		
-
 		AbstractModel::SBB rock2Collider;
 		glm::mat4 modelMatrixColliderRock2 = glm::mat4(matrixModelRock2);
 		modelMatrixColliderRock2 = glm::scale(modelMatrixColliderRock2, glm::vec3(1.0, 1.0, 1.0));
 		modelMatrixColliderRock2 = glm::translate(modelMatrixColliderRock2, modelRock2.getSbb().c);
 		rock2Collider.c = glm::vec3(modelMatrixColliderRock2[3]);
 		rock2Collider.ratio = modelRock2.getSbb().ratio * 1.0;
-		addOrUpdateColliders(collidersSBB, "cebolla23", rock2Collider, matrixModelRock2);
-	
-	
-
+		addOrUpdateColliders(collidersSBB, "cebolla23", rock2Collider, matrixModelRock2);*/
 		
 		//Collider de las Cebollas
 		for (int i = 0; i < cebollaPosition.size(); i++) {
@@ -1625,10 +1611,10 @@ void applicationLoop() {
 			addOrUpdateColliders(collidersOBB, "Cebolla-" + std::to_string(i), cebollaCollider, modelMatrixColliderCebolla);
 			// Set the orientation of collider before doing the scale
 			cebollaCollider.u = glm::quat_cast(modelMatrixColliderCebolla);
-			modelMatrixColliderCebolla = glm::scale(modelMatrixColliderCebolla, glm::vec3(1.0, 1.0, 1.0));
+			modelMatrixColliderCebolla = glm::scale(modelMatrixColliderCebolla, glm::vec3(0.5, 0.5f, 0.5f));
 			modelMatrixColliderCebolla = glm::translate(modelMatrixColliderCebolla, modelOnion.getObb().c);
 			cebollaCollider.c = glm::vec3(modelMatrixColliderCebolla[3]);
-			cebollaCollider.e = modelOnion.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+			cebollaCollider.e = modelOnion.getObb().e * glm::vec3(0.5, 0.5f, 0.5f);
 			std::get<0>(collidersOBB.find("Cebolla-" + std::to_string(i))->second) = cebollaCollider;
 		}
 
@@ -1642,10 +1628,10 @@ void applicationLoop() {
 			addOrUpdateColliders(collidersOBB, "lamp2-" + std::to_string(i), lampCollider, modelMatrixColliderLamp);
 			// Set the orientation of collider before doing the scale
 			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(1.0, 1.0, 1.0));
+			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(0.5f, 0.5f, 0.5f));
 			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, modelLampPost2.getObb().c);
 			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLampPost2.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+			lampCollider.e = modelLampPost2.getObb().e * glm::vec3(0.5f, 0.5f, 0.5f);
 			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) = lampCollider;
 		}
 
@@ -1668,7 +1654,7 @@ void applicationLoop() {
 		//Collider de Shrek
 		AbstractModel::OBB shrekCollider;
 		glm::mat4 modelMatrixColliderShrek = glm::mat4(modelMatrixShrek);
-		modelMatrixColliderShrek = glm::rotate(modelMatrixShrek, glm::radians(-90.0f), glm::vec3(1.0f, 0.0, 0.0));
+		modelMatrixColliderShrek = glm::rotate(modelMatrixShrek, glm::radians(90.0f), glm::vec3(1.0f, 0.0, 0.0));
 		shrekCollider.u = glm::quat_cast(modelMatrixColliderShrek);
 		modelMatrixColliderShrek = glm::scale(modelMatrixShrek, glm::vec3(0.004f, 0.004, 0.004));
 		shrekCollider.e = shrekAnimate.getObb().e * glm::vec3(0.004f, 0.004, 0.004) * glm::vec3(15.5, 15.2, 39.11);
@@ -1736,7 +1722,6 @@ void applicationLoop() {
 						<< jt->first << std::endl;
 					isCollision = true;
 
-					
 						if (it->first == "Cebolla-0")
 						{
 							cebollaPosition[0] =  glm::vec3(cebollaPosition[0].x, 100.0, cebollaPosition[0].z);
@@ -1791,8 +1776,8 @@ void applicationLoop() {
 						<< jt->first << std::endl;
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
-					if (it->first == "cebolla")
-						matrixModelRock = glm::translate(matrixModelRock, glm::vec3(100.0, 100.0, 100.0));
+					/*if (it->first == "cebolla")
+						matrixModelRock = glm::translate(matrixModelRock, glm::vec3(100.0, 100.0, 100.0));*/
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
@@ -1944,16 +1929,11 @@ void prepareScene() {
 	modelRock2.setShader(&shaderMulLighting);
 
 	terrain.setShader(&shaderTerrain);
-
 	
-
 	// Dart Lego
 	modelDartLegoBody.setShader(&shaderMulLighting);
-	
 
 	//Lamp models
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.setShader(&shaderMulLighting);
 	modelOnion.setShader(&shaderMulLighting);
 
@@ -1962,15 +1942,18 @@ void prepareScene() {
 
 	//Shrek
 	shrekAnimate.setShader(&shaderMulLighting);
+
+	//Castillo
+	modeloCastillo.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene() {
 
 	skyboxSphere.setShader(&shaderDepth);
 
-	modelRock.setShader(&shaderDepth);
+	//modelRock.setShader(&shaderDepth);
 
-	modelRock2.setShader(&shaderDepth);
+	//modelRock2.setShader(&shaderDepth);
 
 	terrain.setShader(&shaderDepth);
 
@@ -1980,16 +1963,17 @@ void prepareDepthScene() {
 	
 
 	//Lamp models
-	modelLamp1.setShader(&shaderDepth);
-	modelLamp2.setShader(&shaderDepth);
 	modelLampPost2.setShader(&shaderDepth);
 	modelOnion.setShader(&shaderDepth);
 
 	//Grass
 	modelGrass.setShader(&shaderDepth);
 
-	//Mayow
+	//Shrek
 	shrekAnimate.setShader(&shaderDepth);
+
+	//Castillo
+	modeloCastillo.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -2029,28 +2013,23 @@ void renderScene(bool renderParticles) {
 	 *******************************************/
 	 //Rock render
 	//matrixModelRock[3][1] = terrain.getHeightTerrain(matrixModelRock[3][0], matrixModelRock[3][2]);
-	modelRock.render(matrixModelRock);
-
-	modelRock2.render(matrixModelRock2);
+	//modelRock.render(matrixModelRock);
+	//modelRock2.render(matrixModelRock2);
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
 	// Render the lamps
 	for (int i = 0; i < cebollaPosition.size(); i++) {
 		modelOnion.setPosition(cebollaPosition[i]);
-		modelOnion.setScale(glm::vec3(1.0, 1.0, 1.0));
+		modelOnion.setScale(glm::vec3(0.5, 0.5, 0.5));
 		modelOnion.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
 		modelOnion.render();
 	}
 
 	for (int i = 0; i < lamp2Position.size(); i++) {
 		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x, lamp2Position[i].z);
-		modelLamp2.setPosition(lamp2Position[i]);
-		modelLamp2.setScale(glm::vec3(0.05, 0.05, 0.05));
-		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLamp2.render();
 		modelLampPost2.setPosition(lamp2Position[i]);
-		modelLampPost2.setScale(glm::vec3(0.05, 0.05, 0.05));
+		modelLampPost2.setScale(glm::vec3(0.5, 0.5, 0.5));
 		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
 		modelLampPost2.render();
 	}
@@ -2095,6 +2074,13 @@ void renderScene(bool renderParticles) {
 	mayowModelAnimate.setAnimationIndex(animationIndex);
 	mayowModelAnimate.render(modelMatrixMayowBody);*/
 
+	//Castillo
+	glDisable(GL_CULL_FACE);
+	modeloCastillo.setScale(glm::vec3(10.0f, 10.0f, 10.0f));
+	modeloCastillo.render(modelMatrixCastillo);
+	glEnable(GL_CULL_FACE);
+
+	//Shrek
 	glm::vec3 shrekY = glm::normalize(terrain.getNormalTerrain(modelMatrixShrek[3][0], modelMatrixShrek[3][2]));
 	glm::vec3 shrekX = glm::normalize(modelMatrixShrek[0]);
 	glm::vec3 shrekZ = glm::normalize(glm::cross(shrekX, shrekY));
