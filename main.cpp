@@ -111,6 +111,9 @@ Model paredCastillo;
 Model modelHongo;
 Model modelShrek;
 Model modelBurro;
+
+Model boxImagen;
+
 // Terrain model instance
 Terrain terrain(-1, -1, 400, 16, "../Textures/mapaAlturas_PF_3.png");
 
@@ -137,6 +140,7 @@ std::string fileNames[6] = { "../Textures/ely_hills/hills_ft.tga",
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
+int Mouse= 10;
 
 // Model matrix definitions
 glm::mat4 modelMatrixShrek = glm::mat4(1.0f);
@@ -155,56 +159,43 @@ glm::mat4 modelMatrixHongo = glm::mat4(1.0f);
 glm::mat4 modelMatrixParedTorres = glm::mat4(1.0f);
 glm::mat4 modelMatrixAntorcha = glm::mat4(1.0f);
 glm::mat4 modelMatrixAntorcha2 = glm::mat4(1.0f);
+glm::mat4 modelMatrixImagen = glm::mat4(1.0f);
 
 int animationIndex = 1;
-float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 int modelSelected = 2;
-bool enableCountSelected = true;
-
-// Variables to animations keyframes
-bool saveFrame = false, availableSave = true;
-std::ofstream myfile;
-std::string fileName = "";
-bool record = false;
-
-// Joints interpolations de los enemigos
-/*std::vector<std::vector<float>> keyFramesEnemigoJoints;
-std::vector<std::vector<glm::mat4>> keyFramesEnemigo;
-int indexFrameEnemigoJoints = 0;
-int indexFrameEnemigoJointsNext = 1;
-float interpolationEnemigoJoints = 0.0;
-int maxNumPasosEnemigoJoints = 20;
-int numPasosEnemigoJoints = 0;
-int indexFrameEnemigo = 0;
-int indexFrameEnemigoNext = 1;
-float interpolationEnemigo = 0.0;
-int maxNumPasosEnemigo = 200;
-int numPasosEnemigo = 0;*/
 
 // Objects positions
-std::vector<glm::vec3> ArbolPosition = { glm::vec3(-36.52, 0, -23.24), glm::vec3(-52.73, 0, -3.90), glm::vec3(-70.42, 0, -7.24), glm::vec3(-36.52, 0, 4.24), glm::vec3(-52.73, 0, 20.90), glm::vec3(-70.42, 0, 50.24) };
-
-/*std::vector<glm::vec3> ParedArbolPosition = { glm::vec3(-95.0f, 1.0f, 100.0f),
-		glm::vec3(95.0f, 1.0f, 100.0f), glm::vec3(0.0f, 0.0f, 100.0f) };*/
+std::vector<glm::vec3> ArbolPosition = { glm::vec3(-36.52, 0, -23.24), glm::vec3(-52.73, 0, -3.90),
+glm::vec3(-70.42, 0, -7.24), glm::vec3(-36.52, 0, 4.24),
+glm::vec3(-52.73, 0, 20.90), glm::vec3(-70.42, 0, 50.24),
+glm::vec3(-145, 0, 20.90), glm::vec3(76.42, 0, -40.24),
+glm::vec3(-281.73, 0, 59.90), glm::vec3(-109.42, 0, 50.24),
+glm::vec3(-61.0, 0, -80.90), glm::vec3(-70.42, 0, 15.24),
+glm::vec3(-163.466,0,-61.999), glm::vec3(-185.736,0,-62.335),
+glm::vec3(-83.047, 0,-100.199), glm::vec3(-138.577,0,-32.200),
+glm::vec3(65.639,0,-81.800), glm::vec3(68.805,0,59.352),
+glm::vec3(-128.806,0 ,-15.116), glm::vec3(0.137,0,-41.063),
+glm::vec3(25.949,0,-106.356), glm::vec3(-43.094,0,-81.699),
+glm::vec3(-37.193,0,86.334) };
 
 std::vector<float> ArbolOrientation = { 21.37 + 90, -65.0 + 90 };
-
-//std::vector<float> ParedArbolOrientation = { 95 + 90, -95 + 90 };
  
-std::vector<glm::vec3> cebollaPosition = { glm::vec3(-164.84375, 5.0, 63.671875),
+std::vector<glm::vec3> cebollaPosition = { glm::vec3(-4.84375, 5.0, -163.671875),
 glm::vec3(5.859375, 5.0, 19.140625),
 glm::vec3(-35.9375, 5.0, -84.765625),
 glm::vec3(83.984375, 5.0, 33.984375),
-glm::vec3(-156.640625, 5.0, 75),
+glm::vec3(-156.640625, 5.0, -175.5),
 glm::vec3(67.96875, 5.0, -56.640625),
 glm::vec3(-156.640625, 5.0, -91.015625),
 glm::vec3(30.46875, 5.0, -48.4375),
-glm::vec3(-196.875, 5.0, 87.890625),
+glm::vec3(-196.875, 5.0, 7.890625),
 glm::vec3(-198.046875, 5.0, -62.890625) };
 
 std::vector<glm::vec3> hongosPosition = { glm::vec3(-50.0, 0.75, 50.0), glm::vec3(50.0, 0.75, 70.0) };
 
-std::vector<glm::vec3> enemigoPosition = {glm::vec3(-31.44, 1.5, 0.46), glm::vec3(37.10, 1.5, -51.25), glm::vec3(-2.14, 1.5, -47.14) };
+std::vector<glm::vec3> enemigoPosition = {glm::vec3(-31.44, 1.5, 0.46), glm::vec3(37.10, 1.5, -51.25), glm::vec3(-2.14, 1.5, -47.14),
+glm::vec3(-28.740,4.5,-256.390), glm::vec3(50.596,1.5,-243.693), glm::vec3(42.895,3.0,-15.796),
+glm::vec3(-204.680,1.5,55.401), glm::vec3(-260.738,1.8,-266.046) };
 
 
 //Jump variables
@@ -263,6 +254,9 @@ ALfloat source0Vel[] = { 0.0, 0.0, 0.0 };
 // Source 1
 ALfloat source1Pos[] = { 2.0, 0.0, 0.0 };
 ALfloat source1Vel[] = { 0.0, 0.0, 0.0 };
+// Source 2
+ALfloat source2Pos[] = { 2.0, 0.0, 0.0 };
+ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -511,6 +505,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	skyboxSphere.setShader(&shaderSkybox);
 	skyboxSphere.setScale(glm::vec3(100.0f, 100.0f, 100.0f));
 
+	boxImagen.init();
+	boxImagen.setShader(&shaderMulLighting);
+
 	boxCollider.init();
 	boxCollider.setShader(&shader);
 	boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
@@ -561,6 +558,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelAntorcha2.loadModel("../models/Antorcha/torch.obj");
 	modelAntorcha2.setShader(&shaderMulLighting);
 
+	boxImagen.loadModel("../models/Shrek/Caja.obj");
+	boxImagen.setShader(&shaderMulLighting);
 
 	//Hongos
 	modelHongo.loadModel("../models/Hongo/mushroom.obj");
@@ -636,10 +635,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		std::cout << "Failed to load texture" << std::endl;
 	// Libera la memoria de la textura
 	textureCesped.freeImage(bitmap);
-
-
-
-	
 
 	// Definiendo la textura a utilizar
 	Texture textureTerrainBackground("../Textures/Pasto_PF.jpg");
@@ -885,8 +880,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -917,12 +910,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alGenBuffers(NUM_BUFFERS, buffer);
 	buffer[0] = alutCreateBufferFromFile("../sounds/Hurt.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/075.wav");
+	buffer[2] = alutCreateBufferFromFile("../sounds/win.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR) {
 		printf("- Error open files with alut %d !!\n", errorAlut);
 		exit(2);
 	}
-
 
 	alGetError(); /* clear error */
 	alGenSources(NUM_SOURCES, source);
@@ -940,7 +933,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcefv(source[0], AL_VELOCITY, source0Vel);
 	alSourcei(source[0], AL_BUFFER, buffer[0]);
 	alSourcei(source[0], AL_LOOPING, AL_FALSE);
-	alSourcef(source[0], AL_MAX_DISTANCE, 2000);
+	alSourcef(source[0], AL_MAX_DISTANCE, 4000);
 
 	alSourcef(source[1], AL_PITCH, 1.0f);
 	alSourcef(source[1], AL_GAIN, 1.0f);
@@ -948,8 +941,15 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcefv(source[1], AL_VELOCITY, source1Vel);
 	alSourcei(source[1], AL_BUFFER, buffer[1]);
 	alSourcei(source[1], AL_LOOPING, AL_FALSE);
-	alSourcef(source[1], AL_MAX_DISTANCE, 2000);
+	alSourcef(source[1], AL_MAX_DISTANCE, 4000);
 
+	alSourcef(source[2], AL_PITCH, 1.0f);
+	alSourcef(source[2], AL_GAIN, 50.0f);
+	alSourcefv(source[2], AL_POSITION, source2Pos);
+	alSourcefv(source[2], AL_VELOCITY, source2Vel);
+	alSourcei(source[2], AL_BUFFER, buffer[2]);
+	alSourcei(source[2], AL_LOOPING, AL_FALSE);
+	alSourcef(source[2], AL_MAX_DISTANCE, 8000);
 
 	Contador = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
 	Contador->Initialize();
@@ -996,6 +996,8 @@ void destroy() {
 	modelParedTorres.destroy();
 	modelAntorcha.destroy();
 	modelAntorcha2.destroy();
+
+	boxImagen.destroy();
 	
 	// Custom objects animate
 	modelShrek.destroy();
@@ -1057,8 +1059,12 @@ void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
 }
 
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-	distanceFromTarget -= yoffset;
-	camera->setDistanceFromTarget(distanceFromTarget);
+	if (Mouse < 10 && !Rescate)
+	{
+		distanceFromTarget -= yoffset;
+		camera->setDistanceFromTarget(distanceFromTarget);
+	}
+	
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int state, int mod) {
@@ -1068,7 +1074,8 @@ void mouseButtonCallback(GLFWwindow *window, int button, int state, int mod) {
 			std::cout << "lastMousePos.y:" << lastMousePosY << std::endl;
 			break;
 		case GLFW_MOUSE_BUTTON_LEFT:
-			std::cout << "lastMousePos.x:" << lastMousePosX << std::endl;
+			std::cout << "lastMousePos.x:" << lastMousePosX  <<" " << Mouse << std::endl;
+			Mouse--;
 			break;
 		case GLFW_MOUSE_BUTTON_MIDDLE:
 			std::cout << "lastMousePos.x:" << lastMousePosX << std::endl;
@@ -1083,7 +1090,7 @@ bool processInput(bool continueApplication) {
 		return false;
 	}
 
-	if (vida > 0)
+	if (vida > 0 && Mouse < 10 && !Rescate)
 	{
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE)
 		{
@@ -1100,13 +1107,13 @@ bool processInput(bool continueApplication) {
 
 			if (fabs(axes[1]) > 0.2)
 			{
-				modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(0, 0, axes[1] * 0.1));
+				modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(0, 0, axes[1] * 1.02));
 				animationIndex = 0;
 			}
 
 			if (fabs(axes[0]) > 0.2)
 			{
-				modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+				modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(-axes[0] * 3.0f), glm::vec3(0, 1, 0));
 				animationIndex = 0;
 			}
 
@@ -1119,14 +1126,8 @@ bool processInput(bool continueApplication) {
 				camera->mouseMoveCamera(0.0, axes[3], deltaTime);
 			}
 
-
-
 			const unsigned char * buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 			std::cout << "Numero de botones disponibles :=>" << buttonCount << std::endl;
-			/*if (buttons[0] == GLFW_PRESS)
-			{
-				std::cout << "Se presiona el boton A" << std::endl;
-			}*/
 			if (!isJump && buttons[0] == GLFW_PRESS)
 			{
 				isJump = true;
@@ -1136,35 +1137,18 @@ bool processInput(bool continueApplication) {
 		}
 	}
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+	if (Mouse < 10 && !Rescate)
+	{
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+	}
+
 	offsetX = 0;
 	offsetY = 0;
 
-	// Seleccionar modelo
-	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
-		enableCountSelected = false;
-		modelSelected++;
-		if (modelSelected > 2)
-			modelSelected = 0;
-		if (modelSelected == 1)
-			fileName = "../animaciones/animation_dart_joints.txt";
-		if (modelSelected == 2)
-			fileName = "../animaciones/animation_dart.txt";
-		std::cout << "modelSelected:" << modelSelected << std::endl;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
-		enableCountSelected = true;
-
-	if (availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-		saveFrame = true;
-		availableSave = false;
-	}if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		availableSave = true;
-
-	if (vida > 0)
+	if (vida > 0 && Mouse < 10 && !Rescate)
 	{
 		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 			modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(1.0f), glm::vec3(0, 3, 0));
@@ -1198,19 +1182,14 @@ bool processInput(bool continueApplication) {
 void applicationLoop() {
 	bool psi = true;
 
-	
-
 	glm::mat4 view;
 	glm::vec3 axis;
 	glm::vec3 target;
 	float angleTarget;
 
 	int state = 0;
-	int state1 = 0;
 	float advanceCount = 0.0;
 	float rotCount = 0.0;
-	float rotWheelsX = 0.0;
-	float rotWheelsY = 0.0;
 	int numberAdvance = 0;
 	int maxAdvance = 0.0;
 
@@ -1232,11 +1211,9 @@ void applicationLoop() {
 	modelMatrixTorre1 = glm::scale(modelMatrixTorre1, glm::vec3(5.0f, 5.0f, 5.0f));
 	modelMatrixTorre1 = glm::rotate(modelMatrixTorre1, glm::radians(-60.0f), glm::vec3(0, 1, 0));
 
-
 	modelMatrixTorre2 = glm::translate(modelMatrixTorre2, glm::vec3(-135.3203f, 4.0f, -258.9609f));
 	modelMatrixTorre2 = glm::scale(modelMatrixTorre2, glm::vec3(5.0f, 5.0f, 5.0f));
 	modelMatrixTorre2 = glm::rotate(modelMatrixTorre2, glm::radians(-60.0f), glm::vec3(0, 1, 0));
-
 
 	modelMatrixCasaShrek = glm::translate(modelMatrixCasaShrek, glm::vec3(-1.9531, 0.05, 66.4062));
 	modelMatrixCasaShrek = glm::scale(modelMatrixCasaShrek, glm::vec3(4.0f, 4.0f, 4.0f));
@@ -1245,6 +1222,9 @@ void applicationLoop() {
 	modelMatrixEnemigo2 = glm::translate(modelMatrixEnemigo2, glm::vec3(1.0, 1.5, 1.0));
 	modelMatrixEnemigo2 = glm::scale(modelMatrixEnemigo2, glm::vec3(0.25f, 0.25f, 0.25f));
 
+	modelMatrixImagen = glm::translate(modelMatrixImagen, glm::vec3(15.0, 3.0, -5.0));
+	modelMatrixImagen = glm::scale(modelMatrixImagen, glm::vec3(0.3, 0.3, 0.3));
+	
 	modelMatrixShrek = glm::translate(modelMatrixShrek, glm::vec3(13.0f, 0.05f, -5.0f));
 	modelMatrixShrek = glm::rotate(modelMatrixShrek, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
@@ -1260,7 +1240,6 @@ void applicationLoop() {
 	modelMatrixAntorcha2 = glm::translate(modelMatrixAntorcha2, glm::vec3(-61.0f, 12.0f, -252.0f));
 	modelMatrixAntorcha2 = glm::scale(modelMatrixAntorcha2, glm::vec3(5.0, 5.0, 5.0));
 	modelMatrixAntorcha2 = glm::rotate(modelMatrixAntorcha2, glm::radians(90.0f), glm::vec3(0, 1, 0));
-
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -1287,18 +1266,11 @@ void applicationLoop() {
 		std::map<std::string, bool> collisionDetection;
 
 		// Variables donde se guardan las matrices de cada articulacion por 1 frame
-		/*std::vector<float> matrixEnemigoJoints;
-		std::vector<glm::mat4> matrixEnemigo;*/
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 			(float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-		if (modelSelected == 1) {
-			/*axis = glm::axis(glm::quat_cast(modelMatrixEnemigo));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixEnemigo));
-			target = modelMatrixEnemigo[3];*/
-		}
-		else{
+		if (modelSelected == 2) {
 			axis = glm::axis(glm::quat_cast(modelMatrixShrek));
 			angleTarget = glm::angle(glm::quat_cast(modelMatrixShrek));
 			target = modelMatrixShrek[3];
@@ -1357,8 +1329,6 @@ void applicationLoop() {
 		shaderParticlesFire.setMatrix4("projection", 1, false, glm::value_ptr(projection));
 		shaderParticlesFire.setMatrix4("view", 1, false, glm::value_ptr(view));
 
-
-
 		/*******************************************
 		 * Propiedades de neblina
 		 *******************************************/
@@ -1383,61 +1353,6 @@ void applicationLoop() {
 		shaderTerrain.setVectorFloat3("directionalLight.light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
 		shaderTerrain.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
 		shaderTerrain.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(-0.707106781, -0.707106781, 0.0)));
-
-		/*******************************************
-		 * Propiedades SpotLights
-		 *******************************************/
-		/*glm::vec3 spotPosition = glm::vec3(modelMatrixHeli * glm::vec4(0.32437, 0.226053, 1.79149, 1.0));
-		shaderMulLighting.setInt("spotLightCount", 1);
-		shaderTerrain.setInt("spotLightCount", 1);
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].position", glm::value_ptr(spotPosition));
-		shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(glm::vec3(0, -1, 0)));
-		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
-		shaderMulLighting.setFloat("spotLights[0].linear", 0.074);
-		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.03);
-		shaderMulLighting.setFloat("spotLights[0].cutOff", cos(glm::radians(12.5f)));
-		shaderMulLighting.setFloat("spotLights[0].outerCutOff", cos(glm::radians(15.0f)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
-		shaderTerrain.setVectorFloat3("spotLights[0].position", glm::value_ptr(spotPosition));
-		shaderTerrain.setVectorFloat3("spotLights[0].direction", glm::value_ptr(glm::vec3(0, -1, 0)));
-		shaderTerrain.setFloat("spotLights[0].constant", 1.0);
-		shaderTerrain.setFloat("spotLights[0].linear", 0.074);
-		shaderTerrain.setFloat("spotLights[0].quadratic", 0.03);
-		shaderTerrain.setFloat("spotLights[0].cutOff", cos(glm::radians(12.5f)));
-		shaderTerrain.setFloat("spotLights[0].outerCutOff", cos(glm::radians(15.0f)));*/
-
-		/*******************************************
-		 * Propiedades PointLights
-		 *******************************************/
-		/*shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		shaderTerrain.setInt("pointLightCount", lamp1Position.size() + lamp2Orientation.size());
-		for (int i = 0; i < lamp1Position.size(); i++) {
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp1Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(10.0, 10.0, 10.0));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0, 10.3585, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
-		}*/
 
 		for (int i = 0; i < cebollaPosition.size(); i++) {
 			glm::mat4 matrixAdjustCebolla = glm::mat4(1.0f);
@@ -1472,30 +1387,7 @@ void applicationLoop() {
 			matrixAdjustArbol = glm::scale(matrixAdjustArbol, glm::vec3(1.0005, 1.0005, 1.0005));
 			matrixAdjustArbol = glm::translate(matrixAdjustArbol, glm::vec3(0.759521, 5.00174, 0));
 			glm::vec3 lampPosition = glm::vec3(matrixAdjustArbol[3]);
-			/*shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);*/
 		}
-
-		/*for (int i = 0; i < ParedArbolPosition.size(); i++) {
-			glm::mat4 matrixAdjustParedArbol = glm::mat4(1.0f);
-			matrixAdjustParedArbol = glm::translate(matrixAdjustParedArbol, ArbolPosition[i]);
-			matrixAdjustParedArbol = glm::rotate(matrixAdjustParedArbol, glm::radians(ParedArbolOrientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustParedArbol = glm::scale(matrixAdjustParedArbol, glm::vec3(1.0005, 1.0005, 1.0005));
-			matrixAdjustParedArbol = glm::translate(matrixAdjustParedArbol, glm::vec3(0.759521, 5.00174, 0));
-			glm::vec3 ParedArbolPosition = glm::vec3(matrixAdjustParedArbol[3]);
-		}*/
 
 		/*******************************************
 		 * 1.- We render the depth buffer
@@ -1511,20 +1403,6 @@ void applicationLoop() {
 		renderScene(false);
 		//glCullFace(GL_BACK);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		/*******************************************
-		 * Debug to view the texture view map
-		 *******************************************/
-		 // reset viewport
-		 /*glViewport(0, 0, screenWidth, screenHeight);
-		 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		 // render Depth map to quad for visual debugging
-		 shaderViewDepth.setMatrix4("projection", 1, false, glm::value_ptr(glm::mat4(1.0)));
-		 shaderViewDepth.setMatrix4("view", 1, false, glm::value_ptr(glm::mat4(1.0)));
-		 glActiveTexture(GL_TEXTURE0);
-		 glBindTexture(GL_TEXTURE_2D, depthMap);
-		 boxViewDepth.setScale(glm::vec3(2.0, 2.0, 1.0));
-		 boxViewDepth.render();*/
 
 		 /*******************************************
 		  * 2.- We render the normal objects
@@ -1552,22 +1430,6 @@ void applicationLoop() {
 		glCullFace(oldCullFaceMode);
 		glDepthFunc(oldDepthFuncMode);
 		renderScene();
-		/*******************************************
-		 * Debug to box light box
-		 *******************************************/
-		 /*glm::vec3 front = glm::normalize(-lightPos);
-		 glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), front));
-		 glm::vec3 up = glm::normalize(glm::cross(front, right));
-		 glDisable(GL_CULL_FACE);
-		 glm::mat4 boxViewTransform = glm::mat4(1.0f);
-		 boxViewTransform = glm::translate(boxViewTransform, centerBox);
-		 boxViewTransform[0] = glm::vec4(right, 0.0);
-		 boxViewTransform[1] = glm::vec4(up, 0.0);
-		 boxViewTransform[2] = glm::vec4(front, 0.0);
-		 boxViewTransform = glm::scale(boxViewTransform, glm::vec3(shadowBox->getWidth(), shadowBox->getHeight(), shadowBox->getLength()));
-		 boxLightViewBox.enableWireMode();
-		 boxLightViewBox.render(boxViewTransform);
-		 glEnable(GL_CULL_FACE);*/
 
 		 /*******************************************
 		  * Creacion de colliders
@@ -1581,7 +1443,7 @@ void applicationLoop() {
 		modelMatrixColliderBurro = glm::translate(modelMatrixColliderBurro, modelBurro.getSbb().c);
 		burroCollider.c = glm::vec3(modelMatrixColliderBurro[3]);
 		burroCollider.ratio = modelBurro.getSbb().ratio * 0.25;
-		//if(contador == 10)
+		if(contador == 10)
 			addOrUpdateColliders(collidersSBB, "Burro", burroCollider, modelMatrixBurro);
 
 		//Collider Casa Shrek
@@ -1734,50 +1596,6 @@ void applicationLoop() {
 		addOrUpdateColliders(collidersOBB, "ParedTorres-0", ParedTorresCollider, modelMatrixParedTorres);
 
 		/*******************************************
-		 * Render de colliders
-		 *******************************************/
-		for (std::map<std::string, std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> >::iterator it =
-			collidersOBB.begin(); it != collidersOBB.end(); it++) {
-			glm::mat4 matrixCollider = glm::mat4(1.0);
-			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
-			matrixCollider = matrixCollider * glm::mat4(std::get<0>(it->second).u);
-			matrixCollider = glm::scale(matrixCollider, std::get<0>(it->second).e * 2.0f);
-			boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-			boxCollider.enableWireMode();
-			boxCollider.render(matrixCollider);
-		}
-
-		for (std::map<std::string, std::tuple<AbstractModel::SBB, glm::mat4, glm::mat4> >::iterator it =
-			collidersSBB.begin(); it != collidersSBB.end(); it++) {
-			glm::mat4 matrixCollider = glm::mat4(1.0);
-			matrixCollider = glm::translate(matrixCollider, std::get<0>(it->second).c);
-			matrixCollider = glm::scale(matrixCollider, glm::vec3(std::get<0>(it->second).ratio * 2.0f));
-			sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-			sphereCollider.enableWireMode();
-			sphereCollider.render(matrixCollider);
-		}
-
-		// Esto es para ilustrar la transformacion inversa de los coliders
-		/*glm::vec3 cinv = glm::inverse(mayowCollider.u) * glm::vec4(rockCollider.c, 1.0);
-		glm::mat4 invColliderS = glm::mat4(1.0);
-		invColliderS = glm::translate(invColliderS, cinv);
-		invColliderS =  invColliderS * glm::mat4(mayowCollider.u);
-		invColliderS = glm::scale(invColliderS, glm::vec3(rockCollider.ratio * 2.0, rockCollider.ratio * 2.0, rockCollider.ratio * 2.0));
-		sphereCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
-		sphereCollider.enableWireMode();
-		sphereCollider.render(invColliderS);
-		glm::vec3 cinv2 = glm::inverse(mayowCollider.u) * glm::vec4(mayowCollider.c, 1.0);
-		glm::mat4 invColliderB = glm::mat4(1.0);
-		invColliderB = glm::translate(invColliderB, cinv2);
-		invColliderB = glm::scale(invColliderB, mayowCollider.e * 2.0f);
-		boxCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
-		boxCollider.enableWireMode();
-		boxCollider.render(invColliderB);
-		// Se regresa el color blanco
-		sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-		boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));*/
-
-		/*******************************************
 		 * Test Colisions
 		 *******************************************/
 		for (std::map<std::string,
@@ -1790,8 +1608,6 @@ void applicationLoop() {
 				if (it != jt
 					&& testOBBOBB(std::get<0>(it->second),
 						std::get<0>(jt->second))) {
-					/*std::cout << "Colision " << it->first << " with "
-						<< jt->first << std::endl;*/
 					isCollision = true;
 					if (it->first == "Enemigo-0")
 					{
@@ -1804,7 +1620,6 @@ void applicationLoop() {
 							}
 						}
 					}
-
 					if (it->first == "Enemigo-1")
 					{
 						if (jt->first == "Shrek")
@@ -1814,12 +1629,8 @@ void applicationLoop() {
 								vida--;
 								alSourcePlay(source[0]);
 							}
-							
-							
-							
 						}
 					}
-
 					if (it->first == "Enemigo-2")
 					{
 						if (jt->first == "Shrek")
@@ -1829,12 +1640,63 @@ void applicationLoop() {
 								vida--;
 								alSourcePlay(source[0]);
 							}
-								
-							
-							
 						}
 					}
-
+					if (it->first == "Enemigo-3")
+					{
+						if (jt->first == "Shrek")
+						{
+							if (vida > 0)
+							{
+								vida--;
+								alSourcePlay(source[0]);
+							}
+						}
+					}
+					if (it->first == "Enemigo-4")
+					{
+						if (jt->first == "Shrek")
+						{
+							if (vida > 0)
+							{
+								vida--;
+								alSourcePlay(source[0]);
+							}
+						}
+					}
+					if (it->first == "Enemigo-5")
+					{
+						if (jt->first == "Shrek")
+						{
+							if (vida > 0)
+							{
+								vida--;
+								alSourcePlay(source[0]);
+							}
+						}
+					}
+					if (it->first == "Enemigo-6")
+					{
+						if (jt->first == "Shrek")
+						{
+							if (vida > 0)
+							{
+								vida--;
+								alSourcePlay(source[0]);
+							}
+						}
+					}
+					if (it->first == "Enemigo-7")
+					{
+						if (jt->first == "Shrek")
+						{
+							if (vida > 0)
+							{
+								vida--;
+								alSourcePlay(source[0]);
+							}
+						}
+					}
 					if (it->first == "Enemigo2")
 					{
 						if (jt->first == "Shrek")
@@ -1844,95 +1706,98 @@ void applicationLoop() {
 								vida--;
 								alSourcePlay(source[0]);
 							}
-								
-							
-							
 						}
 					}
-
-
-					
-						if (it->first == "Cebolla-0")
+					if (it->first == "Cebolla-0")
+					{
+						if (jt->first == "Shrek")
 						{
-							cebollaPosition[0] =  glm::vec3(cebollaPosition[0].x + 500, 100.0, cebollaPosition[0].z);
+							cebollaPosition[0] = glm::vec3(cebollaPosition[0].x + 500, 100.0, cebollaPosition[0].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
-							
 						}
-						if (it->first == "Cebolla-1")
+					}
+					if (it->first == "Cebolla-1")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[1] = glm::vec3(cebollaPosition[1].x + 500, 100.0, cebollaPosition[1].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-							
 						}
-						if (it->first == "Cebolla-2")
+					}
+					if (it->first == "Cebolla-2")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[2] = glm::vec3(cebollaPosition[2].x + 500, 100.0, cebollaPosition[2].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-							
 						}
-						if (it->first == "Cebolla-3")
+					}
+					if (it->first == "Cebolla-3")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[3] = glm::vec3(cebollaPosition[3].x + 500, 100.0, cebollaPosition[3].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-							
 						}
-						if (it->first == "Cebolla-4")
+					}
+					if (it->first == "Cebolla-4")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[4] = glm::vec3(cebollaPosition[4].x + 500, 100.0, cebollaPosition[4].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
 						}
-						if (it->first == "Cebolla-5")
+					}
+					if (it->first == "Cebolla-5")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[5] = glm::vec3(cebollaPosition[5].x + 500, 100.0, cebollaPosition[5].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
 						}
-						if (it->first == "Cebolla-6")
+					}
+					if (it->first == "Cebolla-6")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[6] = glm::vec3(cebollaPosition[6].x + 500, 100.0, cebollaPosition[6].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
 						}
-						if (it->first == "Cebolla-7")
+					}
+					if (it->first == "Cebolla-7")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[7] = glm::vec3(cebollaPosition[7].x + 500, 100.0, cebollaPosition[7].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
 						}
-						if (it->first == "Cebolla-8")
+					}
+					if (it->first == "Cebolla-8")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[8] = glm::vec3(cebollaPosition[8].x + 500, 100.0, cebollaPosition[8].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
 						}
-						if (it->first == "Cebolla-9")
+					}
+					if (it->first == "Cebolla-9")
+					{
+						if (jt->first == "Shrek")
 						{
 							cebollaPosition[9] = glm::vec3(cebollaPosition[9].x + 500, 100.0, cebollaPosition[9].z);
 							contador++;
-							std::cout << "Numero de cebollas recogidas: " << contador << std::endl;
 							alSourcePlay(source[1]);
-
-						}				
+						}
+					}				
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
@@ -1949,11 +1814,7 @@ void applicationLoop() {
 				if (it != jt
 					&& testSphereSphereIntersection(std::get<0>(it->second),
 						std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
-						<< jt->first << std::endl;
 					isCollision = true;
-
-					
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
@@ -1969,8 +1830,6 @@ void applicationLoop() {
 			for (; jt != collidersOBB.end(); jt++) {
 				if (testSphereOBox(std::get<0>(it->second),
 					std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
-						<< jt->first << std::endl;
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first, isCollision);
 
@@ -1988,12 +1847,10 @@ void applicationLoop() {
 						if (jt->first == "Shrek")
 						{	
 							Rescate = true;
+							alSourcePlay(source[2]);
 						}
 					}
-					
-				
-				}
-				
+				}		
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first, isCollision);
 		}
@@ -2064,13 +1921,21 @@ void applicationLoop() {
 			break;
 		}
 
-		
-		
-		
-
 		glEnable(GL_BLEND);
-		Contador->render("Numero de cebollas: "+ std::to_string(contador), -0.95 , 0.9, 20, 0.5, 1.0 , 0.2);
-		Contador->render("Salud restante: " + std::to_string(vida), 0.5, 0.9, 20, 0.5, 1.0, 0.2);
+
+		if (Mouse >= 10)
+		{
+			Contador->render("Shrek Rescues ", -0.85, 0.5, 100, 0.5, 1.0, 0.2);
+			Contador->render("Burro", -0.55, 0.25, 100, 0.5, 1.0, 0.2);
+			Contador->render("Iniciar", -0.3, -0.25, 100, 0.5, 1.0, 0.2);
+		}
+		
+		if (Mouse < 10)
+		{
+			Contador->render("Numero de cebollas: " + std::to_string(contador), -0.95, 0.9, 20, 0.5, 1.0, 0.2);
+			Contador->render("Salud restante: " + std::to_string(vida), 0.5, 0.9, 20, 0.5, 1.0, 0.2);
+		}
+		
 		if (Rescate)
 		{
 			Contador->render("Has rescatado", -0.85, 0.0, 100, 0.5, 1.0, 0.2);
@@ -2081,11 +1946,6 @@ void applicationLoop() {
 			Contador->render("Wasted", 0.0, -0.9, 100, 0.5, 1.0, 0.2);
 		glDisable(GL_BLEND);
 		glfwSwapBuffers(window);
-
-		
-
-		
-		
 
 		/****************************+
 		 * Open AL sound data
@@ -2106,26 +1966,7 @@ void applicationLoop() {
 		listenerOri[3] = upModel.x;
 		listenerOri[4] = upModel.y;
 		listenerOri[5] = upModel.z;
-
-		// Listener for the First person camera
-		/*listenerPos[0] = camera->getPosition().x;
-		listenerPos[1] = camera->getPosition().y;
-		listenerPos[2] = camera->getPosition().z;
-		alListenerfv(AL_POSITION, listenerPos);
-		listenerOri[0] = camera->getFront().x;
-		listenerOri[1] = camera->getFront().y;
-		listenerOri[2] = camera->getFront().z;
-		listenerOri[3] = camera->getUp().x;
-		listenerOri[4] = camera->getUp().y;
-		listenerOri[5] = camera->getUp().z;*/
 		alListenerfv(AL_ORIENTATION, listenerOri);
-
-		/*for (unsigned int i = 0; i < sourcesPlay.size(); i++) {
-			if (sourcesPlay[i]) {
-				sourcesPlay[i] = false;
-				alSourcePlay(source[i]);
-			}
-		}*/
 	}
 }
 
@@ -2157,6 +1998,7 @@ void prepareScene() {
 	modelOnion.setShader(&shaderMulLighting);
 	modelEnemigo.setShader(&shaderMulLighting);
 	modelEnemigo2.setShader(&shaderMulLighting);
+	boxImagen.setShader(&shaderMulLighting);
 
 	//Hongos
 	modelHongo.setShader(&shaderMulLighting);
@@ -2188,14 +2030,11 @@ void prepareDepthScene() {
 	modelTorre2.setShader(&shaderDepth);
 	modelCasaShrek.setShader(&shaderDepth);
 
+	boxImagen.setShader(&shaderDepth);
+
 	terrain.setShader(&shaderDepth);
 
-
-	// Dart Lego
-	//modelDartLegoBody.setShader(&shaderDepth);
-	
-
-	//Lamp models
+	//Arbol models
 	modelArbol.setShader(&shaderDepth);
 	modelParedArbol.setShader(&shaderDepth);
 	modelOnion.setShader(&shaderDepth);
@@ -2259,6 +2098,9 @@ void renderScene(bool renderParticles) {
 	modelAntorcha.render(modelMatrixAntorcha);
 	modelAntorcha2.render(modelMatrixAntorcha2);
 
+	if(Mouse >=10)
+		boxImagen.render(modelMatrixImagen);
+
 	modelTorre1.render(modelMatrixTorre1);
 	modelTorre2.render(modelMatrixTorre2);
 	modelCasaShrek.render(modelMatrixCasaShrek);
@@ -2300,32 +2142,6 @@ void renderScene(bool renderParticles) {
 		modelArbol.render();
 	}
 
-	/*for (int i = 0; i < ParedArbolPosition.size(); i++) {
-		ParedArbolPosition[i].y = terrain.getHeightTerrain(ParedArbolPosition[i].x, ParedArbolPosition[i].z);
-		modelParedArbol.setPosition(ParedArbolPosition[i]);
-		modelParedArbol.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelParedArbol.setOrientation(glm::vec3(0, ParedArbolOrientation[i], 0));
-		modelParedArbol.render();
-		modelParedArbol.setPosition(ParedArbolPosition[i]);
-		modelParedArbol.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelParedArbol.setOrientation(glm::vec3(0, ParedArbolOrientation[i], 0));
-		modelParedArbol.render();
-	}*/
-
-
-
-	// Hongo
-	/*glDisable(GL_CULL_FACE);
-	glm::vec3 HongoPosition = glm::vec3(0.0, 0.75, 0.0);
-	//HongoPosition.y = terrain.getHeightTerrain(HongoPosition.x, HongoPosition.z);
-	modelHongo.setPosition(HongoPosition);
-	modelHongo.render(modelMatrixHongo);
-	glEnable(GL_CULL_FACE);
-
-	
-	// Se regresa el cull faces IMPORTANTE para la capa
-	glEnable(GL_CULL_FACE);*/
-
 	/*******************************************
 	 * Custom Anim objects obj
 	 *******************************************/
@@ -2344,11 +2160,7 @@ void renderScene(bool renderParticles) {
 		if (vida > 0)
 			modelShrek.render(modelMatrixShrekBody);
 	}
-	
 
-
-
-	
 	/**********
 	 * Sorter with alpha objects
 	 */
@@ -2366,39 +2178,7 @@ void renderScene(bool renderParticles) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	for (std::map<float, std::pair<std::string, glm::vec3> >::reverse_iterator it = blendingSorted.rbegin(); it != blendingSorted.rend(); it++) {
-		/*if (renderParticles && it->second.first.compare("fountain") == 0) {
-			/**********
-			 * Init Render particles systems
-			 
-			glm::mat4 modelMatrixParticlesFountain = glm::mat4(1.0);
-			modelMatrixParticlesFountain = glm::translate(modelMatrixParticlesFountain, it->second.second);
-			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(modelMatrixParticlesFountain[3][0], modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
-			modelMatrixParticlesFountain = glm::scale(modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
-			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
-			if (currTimeParticlesAnimation - lastTimeParticlesAnimation > 10.0)
-				lastTimeParticlesAnimation = currTimeParticlesAnimation;
-			//glDisable(GL_DEPTH_TEST);
-			glDepthMask(GL_FALSE);
-			// Set the point size
-			glPointSize(10.0f);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textureParticleFountainID);
-			shaderParticlesFountain.turnOn();
-			shaderParticlesFountain.setFloat("Time", float(currTimeParticlesAnimation - lastTimeParticlesAnimation));
-			shaderParticlesFountain.setFloat("ParticleLifetime", 3.5f);
-			shaderParticlesFountain.setInt("ParticleTex", 0);
-			shaderParticlesFountain.setVectorFloat3("Gravity", glm::value_ptr(glm::vec3(0.0f, -0.3f, 0.0f)));
-			shaderParticlesFountain.setMatrix4("model", 1, false, glm::value_ptr(modelMatrixParticlesFountain));
-			glBindVertexArray(VAOParticles);
-			glDrawArrays(GL_POINTS, 0, nParticles);
-			glDepthMask(GL_TRUE);
-			//glEnable(GL_DEPTH_TEST);
-			shaderParticlesFountain.turnOff();
-			/**********
-			 * End Render particles systems
-			 
-		}
-		else */if (renderParticles && it->second.first.compare("fire") == 0) {
+		if (renderParticles && it->second.first.compare("fire") == 0) {
 			/**********
 			 * Init Render particles systems
 			 */
@@ -2426,9 +2206,7 @@ void renderScene(bool renderParticles) {
 			glm::mat4 modelFireParticles = glm::mat4(1.0);
 			modelFireParticles = glm::translate(modelFireParticles, glm::vec3(-61.0f, 15.0f, -250.0f)/*it->second.second*/);
 			modelFireParticles = glm::scale(modelFireParticles, glm::vec3(0.05, 1.0, 1.0));
-			//modelFireParticles[3][1] = 11.0;//terrain.getHeightTerrain(modelFireParticles[3][0], modelFireParticles[3][2]);
 			shaderParticlesFire.setMatrix4("model", 1, false, glm::value_ptr(modelFireParticles));
-
 
 			shaderParticlesFire.turnOn();
 			glActiveTexture(GL_TEXTURE0);
@@ -2463,7 +2241,7 @@ void renderScene(bool renderParticles) {
 }
 
 int main(int argc, char **argv) {
-	init(800, 700, "Window GLFW", false);
+	init(800, 700, "Shrek Rescues Burro", false);
 	applicationLoop();
 	destroy();
 	return 1;
